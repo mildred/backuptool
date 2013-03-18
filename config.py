@@ -17,7 +17,7 @@ defaultconf = {
   "waitwarnfailed": 3 * day,
   "backuphost": None,
   "contactemail": "%s@%s" % (getuser(), getfqdn()),
-  "backupdir": "/etc/bakup.d",
+  "backupdir": "/etc/backup.d",
   #"cmd_index": "xargs bup index",
   #"cmd_run": "bup save -n $BACKUP_NAME",
 }
