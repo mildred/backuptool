@@ -27,7 +27,9 @@ def get(name):
   try:
     with open(fname, "r") as f:
       content = f.read().strip()
-      if isinstance(defaultconf[name], int):
+      if len(content) == 0:
+        return None
+      elif isinstance(defaultconf[name], int):
         num = content[0:-1]
         unit = content[-1]
         if unit == "s": return int(num)

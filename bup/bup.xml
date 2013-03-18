@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<?xml-stylesheet type='text/xsl' href='interface.xsl'?>
+<interface uri="http://mildred.fr/2012/0install/bup.xml" xmlns="http://zero-install.sourceforge.net/2004/injector/interface">
+  <name>bup</name>
+  <summary>It backs things up</summary>
+  <description>
+Highly efficient file backup system based on the git packfile format. Capable of
+doing *fast* incremental backups of virtual machine images.</description>
+  <homepage>https://github.com/bup/bup</homepage>
+  <category>System</category>
+  <implementation arch="Linux-i386" doc-dir="share" id="sha1new=900a5ced3468715b60a8a00463f80fbd43c6a46b" license="OSI Approved :: GNU General Public License v2" main="bin/bup" released="2013-03-15" stability="stable" version="0.17">
+    <archive extract="usr" href="http://ftp.fr.debian.org/debian/pool/main/b/bup/bup_0.17b-2squeeze1_i386.deb" size="102370" type="application/x-deb"/>
+  </implementation>
+</interface>
+<!-- Base64 Signature
+iEYEABECAAYFAlFDa/wACgkQb52o1pp9Lits/ACfTwdOd1Lr8FvtKiX/OgDdBpwLT4gAn0ONSU2M
+TEgHw0eN0EY3YXOZ7NSR
+
+-->
