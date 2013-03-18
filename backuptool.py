@@ -3,7 +3,7 @@
 import os
 import sys
 
-sys.path.insert(os.path.dirname(__file__))
+sys.path.insert(0, os.path.dirname(__file__))
 
 from subprocess import Popen, PIPE, STDOUT
 from email.mime.text import MIMEText
@@ -15,12 +15,12 @@ import shlex
 
 import config
 
-class Interrupt(Exception): pass
+class Terminate(Exception): pass
 
-def handle_int(sig, frame):
-  raise Interrupt()
+def handle_term(sig, frame):
+  raise Terminate()
 
-signal.signal(signal.SIGINT, handle_int)
+signal.signal(signal.SIGTERM, handle_term)
 
 def run(cmd, output, stdin=None, cmdname=None, extract_output=False):
   env = config.get("env")
@@ -56,7 +56,7 @@ def run_command(cmdname, output, stdin=None, extract_output=False):
 
 def run_backup(output):
   ok = True
-  ok = ok and run_command("pre")
+  ok = ok and run_command("pre", output)
   backupdir = config.get("backupdir")
   for element in os.listdir(backupdir):
     elemdir = os.path.join(backupdir, element)
@@ -67,11 +67,11 @@ def run_backup(output):
       status, output = run(os.path.join(elemdir, "backup"), extract_output=True)
       ok = ok and status
       if status:
-        ok = ok and run_command("index", stdin = output)
-        ok = ok and run_command("run")
+        ok = ok and run_command("index", output, stdin = output)
+        ok = ok and run_command("run", output)
       output.append ("Backup for %s finished" % element)
-  ok = ok and run_command("run_all")
-  ok = ok and run_command("post")
+  ok = ok and run_command("run_all", output)
+  ok = ok and run_command("post", output)
   return ok
 
 def send_email(subject, body):
@@ -138,6 +138,6 @@ try:
   # Attempt backup right away
   last_ok_backup = time() - config.get("waitnewbackup")
   while True:
-    last_ok_backup = run_backup_and_sleep(last_ok_backup)
-except Interrupt:
-  print "Interrupted"
+    last_ok_backup = run_backup_sleep_and_warn(last_ok_backup)
+except Terminate:
+  print "Terminateed"

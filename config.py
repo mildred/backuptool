@@ -29,7 +29,7 @@ def get(name):
       content = f.read().strip()
       if len(content) == 0:
         return None
-      elif isinstance(defaultconf[name], int):
+      elif name in defaultconf and isinstance(defaultconf[name], int):
         num = content[0:-1]
         unit = content[-1]
         if unit == "s": return int(num)
@@ -41,4 +41,7 @@ def get(name):
       else:
         return content
   except IOError:
-    return defaultconf[name]
+    if name in defaultconf:
+      return defaultconf[name]
+    else:
+      return None
