@@ -1,1 +1,3 @@
-echo "xargs bup index" >$3
+cat >$3 <<"EOF"
+xargs -d "\n" bup index
+EOF

@@ -1,6 +1,6 @@
 cat >$3 <<EOF
 [Unit]
-description=Make sure backups are ran regularly
+Description=Make sure backups are ran regularly
 
 [Service]
 ExecStart=$BINDIR/backuptool

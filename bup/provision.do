@@ -1,8 +1,6 @@
 #!.../dopsh
 # kate: hl sh
 
-set -x
-
 do-install -p stow
 
 if do-install --any -f /usr/bin/bup -p bup -f /usr/local/bin/bup; then

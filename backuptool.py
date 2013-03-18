@@ -33,16 +33,22 @@ def run(cmd, output, stdin=None, cmdname=None, extract_output=False):
   if not cmdname:
     cmdname = shlex.split(cmd)[0]
   output.append("Running %s: %s" % (cmdname, cmd))
-  p = Popen(cmd,
-    stdin=(None if stdin == None else PIPE),
-    stdout=PIPE,
-    stderr=(PIPE if extract_output else STDOUT))
-  p.communicate(stdin)
-  out = p.stderr if extract_output else p.stdout
-  output.extend(["  "+l for l in out.split("\n")])
-  output.append("Running %s: exit code %d" % (cmdname, p.returncode))
+  try:
+    p = Popen(cmd,
+      shell=isinstance(cmd, str),
+      stdin=(None if stdin == None else PIPE),
+      stdout=PIPE,
+      stderr=(PIPE if extract_output else STDOUT))
+    out, err = p.communicate(stdin)
+  except OSError as err:
+    output.append("Running %s: failed %s" % (cmdname, str(err)))
+    return -1, None
+  else:
+    debug_out = err if extract_output else out
+    output.extend(["  "+l for l in debug_out.split("\n")])
+    output.append("Running %s: exit code %d" % (cmdname, p.returncode))
   if extract_output:
-    return p.returncode == 0, p.stdout
+    return p.returncode == 0, out
   else:
     return p.returncode == 0
 
@@ -64,11 +70,11 @@ def run_backup(output):
       os.environ["BACKUP_DIR"]  = elemdir
       os.environ["BACKUP_NAME"] = element
       output.append ("Backup %s" % element)
-      status, output = run(os.path.join(elemdir, "backup"), extract_output=True)
+      status, out = run(os.path.join(elemdir, "backup"), output, extract_output=True)
       ok = ok and status
       if status:
-        ok = ok and run_command("index", output, stdin = output)
-        ok = ok and run_command("run", output)
+        ok = ok and run_command("index", output, stdin = out)
+        ok = ok and run_command("run", output, stdin = out)
       output.append ("Backup for %s finished" % element)
   ok = ok and run_command("run_all", output)
   ok = ok and run_command("post", output)
@@ -81,6 +87,7 @@ def send_email(subject, body):
   msg["Subject"] = subject
   p = Popen(["/usr/sbin/sendmail", "-t"], stdin=PIPE)
   p.communicate(msg.as_string())
+  print msg.as_string()
 
 def warn_failed_too_long(errors):
   send_email("Too long since last backup", errors)
@@ -123,6 +130,8 @@ def run_backup_sleep_and_warn(last_ok_backup):
     sleep(config.get("waitnewbackup"))
     return oktime
   else:
+    print output
+    print "Failed backup, retry in a short while"
     sleep(config.get("waitfailedretry"))
     now = time()
     waitwarnfailed = config.get("waitwarnfailed")
