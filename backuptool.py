@@ -26,7 +26,7 @@ def run(cmd, output, stdin=None, cmdname=None, extract_output=False):
   env = config.get("env")
   if env != None:
     for e in env.split("\n"):
-      var, val = e.partition("=")
+      var, eq, val = e.partition("=")
       if os.getenv(var) != val:
         output.append(e)
       os.environ[var]=val

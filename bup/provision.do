@@ -1,25 +1,19 @@
 #!.../dopsh
 # kate: hl sh
 
-do-install -p stow
-
-if do-install --any -f /usr/bin/bup -p bup -f /usr/local/bin/bup; then
+if ! [ -e /usr/local/stow/bup ] && do-install --any -f /usr/bin/bup -p bup -f /usr/local/bin/bup; then
   :
-elif has yum; then
-  yum groupinstall -y "Development Tools"
-  yum install -y python python-devel fuse-python pyxattr pylibacl perl-Time-HiRes
+else
+  #yum groupinstall -y "Development Tools"
+  do-install -p stow -p pandoc -p gcc
+  do-install -p python -p python-devel -p fuse-python -p pyxattr -p pylibacl #-p perl-Time-HiRes
   do-git-clone git://github.com/bup/bup /usr/local/src/bup
-  ( cd /usr/local/src/bup
-    git checkout -f master
-    make CFLAGS="-werror -Wno-error"
-    #make test
-    make PREFIX=/usr/local/stow/bup install
-    stow -d /usr/local/stow -R bup
-    #make DESTDIR=$PWD/root install
-    #rm -f bup-*.rpm
-    #fpm -s dir -t rpm -C root -n bup -v 0.24b .
-    #rpm -ivh bup-*.rpm
-  )
+  pushd /usr/local/src/bup
+  git checkout -f master
+  make CFLAGS="-Wno-error"
+  make PREFIX=/usr/local/stow/bup install
+  stow -d /usr/local/stow -R bup
+  popd
 fi
 
 if ! has bup; then
