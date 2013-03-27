@@ -10,8 +10,8 @@ else
   do-git-clone git://github.com/bup/bup /usr/local/src/bup
   pushd /usr/local/src/bup
   git checkout -f master
-  make CFLAGS="-Wno-error"
-  make PREFIX=/usr/local/stow/bup install
+  make --quiet --no-print-directory CFLAGS="-Wno-error"
+  make --quiet --no-print-directory PREFIX=/usr/local/stow/bup install
   stow -d /usr/local/stow -R bup
   popd
 fi

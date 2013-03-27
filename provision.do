@@ -23,8 +23,8 @@ for c in conf/*.do; do
 done
 
 if has systemctl; then
-  systemctl enable backuptool.service
-  systemctl restart backuptool.service
+  redo-exec systemctl enable backuptool.service
+  redo-exec systemctl restart backuptool.service
 else
   fail "Not available on systems without systemd"
 fi
