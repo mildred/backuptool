@@ -14,11 +14,10 @@ do-provision bup
 install -d /etc/backup
 install -d /etc/backup.d
 
-for c in conf/*.do; do
-  c="${c%.do}"
-  redo "$c"
-  if [ -e $c ]; then
-    install -m644 "$c" "/etc/backup/${c#conf/}"
+for c in backuphost cmd_index cmd_post cmd_pre cmd_run contactemail env test; do
+  redo "conf/$c.conf"
+  if [ -e "conf/$c.conf" ]; then
+    install -m644 "conf/$c.conf" "/etc/backup/$c"
   fi
 done
 
